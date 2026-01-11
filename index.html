@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ORION CRASH</title>
+    <style>
+        :root { --neon-blue: #00f3ff; --neon-purple: #bc13fe; --glass: rgba(255, 255, 255, 0.1); }
+        body { margin: 0; background: #050505; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: white; overflow: hidden; }
+        #game-canvas { width: 100%; height: 40vh; background: radial-gradient(circle at bottom, #111 0%, #000 100%); position: relative; }
+        .bet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; height: 50vh; }
+        .bet-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
+        .btn-surge { background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); border: none; border-radius: 10px; color: white; padding: 12px; font-weight: bold; font-size: 16px; transition: transform 0.1s; }
+        .btn-surge:active { transform: scale(0.95); }
+        .multiplier { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: 800; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); }
+        .shooting-star { position: absolute; width: 40px; height: 40px; filter: drop-shadow(0 0 10px var(--neon-blue)); }
+    </style>
+</head>
+<body>
+    <div id="game-canvas">
+        <div class="multiplier" id="display-mult">1.00x</div>
+        <div id="motorbike" class="shooting-star">🏍️</div>
+    </div>
+
+    <div class="bet-grid">
+        <div class="bet-card" id="slot-1"><div>Slot 1</div><button class="btn-surge" onclick="placeBet(1)">BET</button></div>
+        <div class="bet-card" id="slot-2"><div>Slot 2</div><button class="btn-surge" onclick="placeBet(2)">BET</button></div>
+        <div class="bet-card" id="slot-3"><div>Slot 3</div><button class="btn-surge" onclick="placeBet(3)">BET</button></div>
+        <div class="bet-card" id="slot-4"><div>Slot 4</div><button class="btn-surge" onclick="placeBet(4)">BET</button></div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/a/macros/oriondevcore.com/s/AKfycbyQrTNP0PD4oE_Zq7_IJNkXhD8pxuApU_pCFChD-rYT0ENM-hbEn-TAahtRXnZgfD1iwA/exec";
+        
+        async function placeBet(slotId) {
+            const data = { action: 'placeMultiBet', slot: slotId, amount: 20, username: 'Graham' };
+            
+            // Bypass CORS with text/plain
+            const response = await fetch(SCRIPT_URL + "?action=placeMultiBet", {
+                method: "POST",
+                mode: "no-cors", // Simple request bypass
+                headers: { "Content-Type": "text/plain" },
+                body: JSON.stringify(data),
+                redirect: "follow" // Handle GAS 302 redirect
+            });
+            console.log("Bet Sent for Slot " + slotId);
+        }
+
+        // 60FPS Animation Loop
+        let start = null;
+        function animate(timestamp) {
+            if (!start) start = timestamp;
+            const progress = timestamp - start;
+            // High-performance transforms
+            document.getElementById('motorbike').style.transform = `translate(${progress/10}px, ${-Math.pow(progress/100, 2)}px)`;
+            requestAnimationFrame(animate);
+        }
+    </script>
+</body>
+</html>
