@@ -15,279 +15,212 @@
             --neon-pink: #FF00FF;
             --danger: #FF3333;
             --safe: #00FF99;
-            --glass-panel: rgba(20, 20, 25, 0.95);
+            --glass: rgba(20, 20, 25, 0.95);
         }
         body { 
-            margin: 0; 
-            background-color: var(--deep-space); 
-            font-family: 'Verdana', sans-serif;
-            color: white; 
-            overflow: hidden; 
-            touch-action: manipulation; 
+            margin: 0; background-color: var(--deep-space); 
+            font-family: 'Verdana', sans-serif; color: white; 
+            overflow: hidden; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
         }
-        
         #app { display: flex; flex-direction: column; height: 100vh; }
         
         /* HEADER */
-        .header { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 10px 15px; background: rgba(0,0,0,0.8); 
-            border-bottom: 1px solid #333; z-index: 20; 
-        }
-        .header-left { display: flex; align-items: center; gap: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; z-index: 20; }
         .menu-icon { font-size: 1.5rem; color: var(--krypton-blue); cursor: pointer; }
-        .logo { font-weight: 900; font-size: 1rem; letter-spacing: 1px; color: white; }
+        .logo { font-weight: 900; font-size: 1rem; color: white; }
         .logo span { color: var(--krypton-blue); }
-
-        .weather-pill {
-            display: flex; align-items: center; gap: 6px;
-            font-size: 0.75rem; color: #aaa; background: rgba(255,255,255,0.1);
-            padding: 4px 10px; border-radius: 12px; border: 1px solid #444;
-        }
-
-        .balance-pill { 
-            background: #111; border: 1px solid var(--krypton-blue); padding: 4px 12px; 
-            border-radius: 50px; font-weight: bold; font-size: 0.85rem; 
-            display: flex; align-items: center; gap: 8px; color: #FFD700;
-        }
-        .add-btn { background: var(--krypton-blue); color: #000; border-radius: 50%; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1rem; cursor: pointer; }
+        .balance-pill { background: #111; border: 1px solid var(--krypton-blue); padding: 4px 12px; border-radius: 50px; font-weight: bold; font-size: 0.9rem; color: #FFD700; display: flex; align-items: center; gap: 8px; }
+        .add-btn { background: var(--krypton-blue); color: #000; border-radius: 50%; width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; font-weight: 900; cursor: pointer; }
 
         /* HISTORY */
-        .history-track { 
-            height: 30px; background: #080808; display: flex; align-items: center; 
-            gap: 6px; padding: 0 10px; overflow: hidden; border-bottom: 1px solid #222;
-        }
-        .history-bubble {
-            background: #1a1a1a; border-radius: 8px; padding: 2px 8px; 
-            font-size: 0.7rem; font-weight: bold; min-width: 35px; text-align: center;
-            color: #666; border: 1px solid #333;
-        }
+        .history-track { height: 30px; background: #080808; display: flex; align-items: center; gap: 5px; padding: 0 10px; overflow: hidden; border-bottom: 1px solid #222; }
+        .history-bubble { background: #1a1a1a; border-radius: 6px; padding: 3px 8px; font-size: 0.7rem; font-weight: bold; min-width: 35px; text-align: center; color: #666; border: 1px solid #333; }
         .win { border-color: var(--safe); color: var(--safe); }
         .big-win { background: var(--neon-purple); color: white; border: none; }
 
-        /* STAGE & ANIMATION */
+        /* STAGE */
         #stage { flex: 1; position: relative; overflow: hidden; background: radial-gradient(circle at center, #00152a 0%, #000000 90%); }
+        .multiplier-box { position: absolute; top: 10%; width: 100%; text-align: center; z-index: 10; }
+        .mult-text { font-size: 4rem; font-weight: bold; color: rgba(255,255,255,0.25); text-shadow: 0 0 10px rgba(0,255,255,0.1); transition: all 0.1s; }
+        .mult-active { color: rgba(255,255,255,0.9); text-shadow: 0 0 30px var(--krypton-blue); }
         
-        /* GHOST MULTIPLIER (Higher & Transparent) */
-        .multiplier-box {
-            position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
-            text-align: center; z-index: 10; width: 100%;
-        }
-        .mult-text {
-            font-family: 'Verdana', sans-serif;
-            font-size: 3.5rem; /* Smaller */
-            font-weight: bold; 
-            color: rgba(255, 255, 255, 0.3); /* 30% GHOST */
-            text-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
-            font-variant-numeric: tabular-nums; 
-            transition: all 0.1s;
-        }
-        .mult-active { color: rgba(255, 255, 255, 0.8); text-shadow: 0 0 30px var(--krypton-blue); }
+        /* ASSETS */
+        #lover-target { position: absolute; top: 15%; right: 5%; width: 90px; height: 130px; opacity: 0.8; z-index: 5; animation: beckon 2s infinite; }
+        .lover-placeholder { width: 60px; height: 60px; background: var(--neon-pink); border-radius: 50%; box-shadow: 0 0 40px var(--neon-pink); }
+        
+        .scooter-wrap { position: absolute; bottom: 30px; left: 20px; width: 150px; z-index: 15; will-change: bottom, left; }
+        .hero-img { width: 100%; filter: drop-shadow(0 0 15px var(--krypton-blue)); animation: rumble 0.08s infinite; }
+        @keyframes rumble { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, 1px); } }
+        
+        .bolt-trail { position: absolute; top: 60%; right: 40%; width: 120px; height: 4px; background: linear-gradient(90deg, transparent, var(--krypton-blue)); box-shadow: 0 0 20px var(--krypton-blue); transform-origin: right; transform: rotate(15deg) scaleX(0); }
+        @keyframes beckon { 0%, 100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.05); } }
 
-        /* THE LOVER (Target) */
-        #lover-target {
-            position: absolute; top: 15%; right: 5%;
-            width: 80px; height: 120px;
-            opacity: 0.6;
-            filter: drop-shadow(0 0 15px var(--neon-pink));
-            z-index: 5;
-            animation: beckon 2s infinite ease-in-out;
-        }
-        /* If no image, create a glowing orb */
-        .lover-placeholder {
-            width: 50px; height: 50px; background: var(--neon-pink); border-radius: 50%;
-            box-shadow: 0 0 40px var(--neon-pink);
-        }
-        @keyframes beckon { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.05); opacity: 0.9; } }
+        /* CONTROLS (ADVANCED) */
+        .controls { background: #050505; border-top: 2px solid var(--krypton-blue); padding: 5px; display: flex; flex-direction: column; gap: 5px; z-index: 50; padding-bottom: 20px; }
+        
+        .preset-bar { display: flex; gap: 8px; overflow-x: auto; padding: 5px 0; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .chip { background: #1a1a1a; border: 1px solid #333; color: #888; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; white-space: nowrap; cursor: pointer; flex-shrink: 0; }
+        .chip:active { background: var(--krypton-blue); color: black; }
 
-        /* BOLT THE HERO (Bike) */
-        .scooter-wrap { 
-            position: absolute; bottom: 30px; left: 20px; 
-            width: 140px; height: auto; /* Bigger for detail */
-            z-index: 15; will-change: bottom, left, transform; 
-        }
-        .hero-img {
-            width: 100%; height: auto;
-            filter: drop-shadow(0 0 10px var(--krypton-blue));
-            animation: engineRumble 0.1s infinite; /* THE SHAKE! */
-        }
-        /* Engine Vibration Animation */
-        @keyframes engineRumble {
-            0% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-1px) rotate(0.5deg); }
-            50% { transform: translateY(1px) rotate(0deg); }
-            75% { transform: translateY(-1px) rotate(-0.5deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
-        }
+        .panels-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .bet-card { background: #121212; border: 1px solid #333; border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+        
+        .input-row { display: flex; gap: 5px; align-items: center; }
+        .input-label { font-size: 0.65rem; color: #666; text-transform: uppercase; width: 40px; }
+        .dark-input { background: black; border: 1px solid #333; color: white; width: 100%; text-align: center; padding: 8px 0; border-radius: 4px; font-weight: bold; font-size: 0.9rem; }
+        
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.7rem; color: #888; margin-top: 2px; }
+        .toggle-switch { width: 30px; height: 16px; background: #333; border-radius: 10px; position: relative; transition: 0.3s; }
+        .toggle-switch.on { background: var(--safe); }
+        .toggle-knob { width: 12px; height: 12px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s; }
+        .toggle-switch.on .toggle-knob { left: 16px; }
 
-        .bolt-trail {
-            position: absolute; top: 60%; right: 40%; width: 100px; height: 4px;
-            background: linear-gradient(90deg, transparent, var(--krypton-blue));
-            box-shadow: 0 0 15px var(--krypton-blue);
-            transform-origin: right; transform: rotate(15deg) scaleX(0);
-            border-radius: 10px;
-        }
+        .btn { border: none; border-radius: 4px; padding: 12px 0; font-weight: 900; font-size: 0.9rem; text-transform: uppercase; width: 100%; color: white; cursor: pointer; transition: transform 0.1s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-bet { background: #9D00FF; box-shadow: 0 3px 0 #60009e; }
+        .btn-cancel { background: #FF3333; box-shadow: 0 3px 0 #990000; }
+        .btn-cashout { background: #FFCC00; color: black; box-shadow: 0 3px 0 #b38f00; }
+        .btn-wait { background: #222; color: #555; cursor: default; box-shadow: none; }
 
-        /* GRID ANIMATION */
-        .grid-floor {
-            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
-            background-image: linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 60px 60px; transform: perspective(400px) rotateX(70deg);
-            animation: moveFloor 2s linear infinite; opacity: 0.3; /* FASTER GRID */
-        }
-        @keyframes moveFloor { from { transform: perspective(400px) rotateX(70deg) translateY(0); } to { transform: perspective(400px) rotateX(70deg) translateY(60px); } }
-
-        /* CONTROLS */
-        .controls { 
-            background: #050505; border-top: 2px solid var(--krypton-blue); padding: 10px;
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; z-index: 20;
-        }
-        .bet-card {
-            background: #121212; border: 1px solid #333; border-radius: 8px; padding: 5px;
-            display: flex; flex-direction: column; gap: 5px;
-        }
-        .amount-input {
-            background: black; border: 1px solid #333; color: white; width: 100%;
-            text-align: center; font-size: 1.1rem; font-weight: bold; padding: 8px 0;
-            border-radius: 5px; font-family: 'Verdana', sans-serif;
-        }
-        .btn {
-            border: none; border-radius: 5px; padding: 12px 0; font-weight: 900; font-size: 0.9rem;
-            text-transform: uppercase; cursor: pointer; color: white; width: 100%; 
-            font-family: 'Verdana', sans-serif;
-        }
-        .btn-bet { background: #9D00FF; box-shadow: 0 4px 0 #60009e; }
-        .btn-cancel { background: #FF3333; box-shadow: 0 4px 0 #990000; }
-        .btn-cashout { background: #FFCC00; color: black; box-shadow: 0 4px 0 #b38f00; }
-        .btn-wait { background: #222; color: #555; box-shadow: none; cursor: default; }
-
-        /* PRODUCT MENU DRAWER */
-        .drawer {
-            position: fixed; top: 0; left: 0; width: 85%; max-width: 320px; height: 100%;
-            background: var(--glass-panel); border-right: 1px solid var(--krypton-blue);
-            transform: translateX(-100%); transition: transform 0.3s ease; z-index: 200;
-            overflow-y: auto; backdrop-filter: blur(10px);
-        }
+        /* MENU DRAWER */
+        .drawer { position: fixed; top: 0; left: 0; width: 85%; height: 100%; background: var(--glass); transform: translateX(-100%); transition: 0.3s; z-index: 200; backdrop-filter: blur(10px); border-right: 1px solid var(--krypton-blue); }
         .drawer.open { transform: translateX(0); }
-        .drawer-header { padding: 20px; border-bottom: 1px solid #333; }
-        .drawer-title { font-size: 1.2rem; font-weight: 900; color: white; margin-bottom: 5px; }
+        .drawer-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:190; display:none; }
+        .product-card { background: #111; border: 1px solid #333; padding: 10px; margin: 10px; border-radius: 8px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
+        .product-icon { width: 40px; height: 40px; object-fit: contain; }
+
+        .status-pill { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); color: var(--krypton-blue); font-weight: bold; display: none; text-shadow: 0 0 10px var(--krypton-blue); letter-spacing: 2px; }
         
-        .product-list { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
-        .product-card {
-            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
-            border: 1px solid #333; border-radius: 12px; padding: 12px;
-            display: flex; align-items: center; gap: 15px;
-            transition: border-color 0.2s; cursor: pointer;
-        }
-        .product-card:active { border-color: var(--krypton-blue); }
-        .product-icon { width: 45px; height: 45px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(0,255,255,0.3)); }
-        
-        .drawer-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8); z-index: 190; display: none;
-        }
-        
-        .status-pill {
-            position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%);
-            color: var(--krypton-blue); font-size: 0.8rem; letter-spacing: 2px;
-            display: none;
-        }
+        /* AUDIO WARNING */
+        #audio-init { display:none; }
     </style>
 </head>
 <body>
 
     <div class="drawer-overlay" id="overlay" onclick="toggleMenu()"></div>
     <div class="drawer" id="drawer">
-        <div class="drawer-header">
-            <div class="drawer-title">ORION <span style="color:var(--krypton-blue)">ECOSYSTEM</span></div>
-        </div>
-        <div class="product-list">
-            <div class="product-card" onclick="openLink('mpos')">
-                <img src="mpos.png" class="product-icon">
-                <div><h3>Orion mPOS</h3><p style="font-size:0.7rem; color:#888">Automated Business</p></div>
-            </div>
-            <div class="product-card" onclick="openLink('legal')">
-                <img src="legal.png" class="product-icon">
-                <div><h3>Legal Suite</h3><p style="font-size:0.7rem; color:#888">AI Legal Partner</p></div>
-            </div>
-            <div class="product-card" onclick="checkWeather()">
-                <img src="weather.png" class="product-icon">
-                <div><h3>Weather</h3><p style="font-size:0.7rem; color:#888">Live Forecasts</p></div>
-            </div>
-        </div>
+        <div style="padding:20px; font-weight:900; color:white; font-size:1.2rem;">ORION <span style="color:var(--krypton-blue)">ECOSYSTEM</span></div>
+        <div class="product-card" onclick="openShop()"><img src="mpos.png" class="product-icon"><div><div>Orion mPOS</div><div style="font-size:0.7rem; color:#888;">Automated Business</div></div></div>
+        <div class="product-card" onclick="alert('Legal')"><img src="legal.png" class="product-icon"><div><div>Legal Suite</div><div style="font-size:0.7rem; color:#888;">AI Partner</div></div></div>
+        <div class="product-card" onclick="checkWeather()"><img src="weather.png" class="product-icon"><div><div>Weather</div><div style="font-size:0.7rem; color:#888;">Live Forecasts</div></div></div>
     </div>
 
     <div id="app">
         <div class="header">
-            <div class="header-left">
+            <div style="display:flex; gap:10px; align-items:center;">
                 <div class="menu-icon" onclick="toggleMenu()">☰</div>
                 <div class="logo">ORION <span>CRASH</span></div>
             </div>
-            <div class="weather-pill" onclick="checkWeather()">
-                <img src="weather.png" width="14"> 24°C Durban
-            </div>
-            <div class="balance-pill">
-                <span id="balance">1000</span>
-                <div class="add-btn" onclick="openShop()">+</div>
-            </div>
+            <div class="balance-pill"><span id="balance">1000</span> <div class="add-btn" onclick="openShop()">+</div></div>
         </div>
 
         <div class="history-track" id="history-track"></div>
 
         <div id="stage">
-            <div class="grid-floor"></div>
+            <div style="position:absolute; width:200%; height:200%; top:-50%; left:-50%; background-image:linear-gradient(rgba(0,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,255,0.05) 1px, transparent 1px); background-size:60px 60px; transform:perspective(400px) rotateX(70deg); animation:moveFloor 2s linear infinite; opacity:0.3;"></div>
+            <div class="multiplier-box"><div class="mult-text" id="mult-display">1.00x</div><div class="status-pill" id="status-text">WAITING</div></div>
             
-            <div class="multiplier-box">
-                <div class="mult-text" id="mult-display">1.00x</div>
-                <div class="status-pill" id="status-text">SURGE IN PROGRESS</div>
-            </div>
-
-            <div id="lover-target">
-                <img src="lady.png" style="width:100%; height:100%; object-fit:contain;" onerror="this.style.display='none'; this.parentElement.classList.add('lover-placeholder');">
-            </div>
-
-            <div id="scooter-area">
-                <div class="scooter-wrap" id="player">
-                    <img src="hero.png" class="hero-img">
-                </div>
-                <div class="bolt-trail" id="trail"></div>
-            </div>
+            <div id="lover-target"><img src="mintaka.png" style="width:100%; height:100%; object-fit:contain;" onerror="this.parentElement.classList.add('lover-placeholder')"></div>
+            <div id="scooter-area"><div class="scooter-wrap" id="player"><img src="hero-bolt.png" class="hero-img"></div><div class="bolt-trail" id="trail"></div></div>
         </div>
 
         <div class="controls">
-            <div class="bet-card">
-                <input type="number" class="amount-input" id="bet1-in" value="200">
-                <button class="btn btn-bet" id="btn1" onclick="handleAction(1)">BET</button>
+            <div class="preset-bar">
+                <div class="chip" onclick="setAllBets(40)">40</div>
+                <div class="chip" onclick="setAllBets(50)">50</div>
+                <div class="chip" onclick="setAllBets(100)">100</div>
+                <div class="chip" onclick="setAllBets(200)">200</div>
+                <div class="chip" onclick="setAllBets(300)">300</div>
+                <div class="chip" onclick="setAllBets(500)">500</div>
+                <div class="chip" onclick="setAllBets(800)">800</div>
+                <div class="chip" onclick="setAllBets(1200)">1.2k</div>
+                <div class="chip" onclick="setAllBets(2500)">2.5k</div>
+                <div class="chip" onclick="setAllBets(4000)">4k</div>
+                <div class="chip" onclick="setAllBets(6000)">6k</div>
             </div>
-            <div class="bet-card">
-                <input type="number" class="amount-input" id="bet2-in" value="100">
-                <button class="btn btn-bet" id="btn2" onclick="handleAction(2)">BET</button>
+
+            <div class="panels-row">
+                <div class="bet-card">
+                    <div class="input-row"><div class="input-label">BET</div><input type="number" id="bet1-in" class="dark-input" value="100"></div>
+                    <div class="input-row"><div class="input-label">AUTO</div><input type="number" id="auto1-in" class="dark-input" placeholder="Example: 2.00"></div>
+                    <div class="toggle-row">
+                        <span>AUTO BET</span>
+                        <div class="toggle-switch" id="toggle1" onclick="toggleAuto(1)"><div class="toggle-knob"></div></div>
+                    </div>
+                    <button class="btn btn-bet" id="btn1" onclick="handleAction(1)">BET</button>
+                </div>
+
+                <div class="bet-card">
+                    <div class="input-row"><div class="input-label">BET</div><input type="number" id="bet2-in" class="dark-input" value="200"></div>
+                    <div class="input-row"><div class="input-label">AUTO</div><input type="number" id="auto2-in" class="dark-input" placeholder="Example: 10.0"></div>
+                    <div class="toggle-row">
+                        <span>AUTO BET</span>
+                        <div class="toggle-switch" id="toggle2" onclick="toggleAuto(2)"><div class="toggle-knob"></div></div>
+                    </div>
+                    <button class="btn btn-bet" id="btn2" onclick="handleAction(2)">BET</button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- CONFIG ---
         const API_URL = "https://script.google.com/macros/s/AKfycbxPVj7S3C_nPifGGDh314wswZ1U9HhKOgg9ada_uvMmbgtOlPZHyEq1J-qiMfMpZwIwIw/exec";
+        
+        // --- SOUNDS ---
+        // Ensure you upload engine.mp3, crash.mp3, win.mp3 to GitHub!
+        const sfx = {
+            engine: new Audio('engine.mp3'),
+            crash: new Audio('crash.mp3'),
+            win: new Audio('win.mp3')
+        };
+        sfx.engine.loop = true; // Engine loops while flying
+        sfx.engine.volume = 0.5;
+
         let state = "WAITING"; 
         let balance = 1000;
         let multiplier = 1.00;
         let crashPoint = 0;
         let gameLoop = null;
+
         let nextBets = { 1: 0, 2: 0 };
         let liveBets = { 1: null, 2: null }; 
+        let autoBetOn = { 1: false, 2: false };
+        let autoCollect = { 1: null, 2: null };
 
-        startCountdown(5); 
+        // START GAME
+        startCountdown(5);
+
+        // --- PRESETS ---
+        function setAllBets(val) {
+            document.getElementById('bet1-in').value = val;
+            document.getElementById('bet2-in').value = val;
+        }
+
+        function toggleAuto(slot) {
+            autoBetOn[slot] = !autoBetOn[slot];
+            const sw = document.getElementById(`toggle${slot}`);
+            if(autoBetOn[slot]) sw.classList.add('on'); else sw.classList.remove('on');
+        }
 
         function startCountdown(sec) {
             state = "WAITING";
             resetVisuals();
             document.getElementById('status-text').style.display = 'block';
+            
+            // Check Auto Bets
+            [1, 2].forEach(slot => {
+                if(autoBetOn[slot] && nextBets[slot] === 0) {
+                    const amt = parseInt(document.getElementById(`bet${slot}-in`).value);
+                    if(amt <= balance) nextBets[slot] = amt;
+                }
+            });
+            updateButtons();
+
             let count = sec;
             const timer = setInterval(() => {
                 document.getElementById('status-text').innerText = `NEXT ROUND: ${count}`;
-                updateButtons();
-                if (count <= 0) {
+                if(count <= 0) {
                     clearInterval(timer);
                     document.getElementById('status-text').style.display = 'none';
                     launch();
@@ -299,30 +232,45 @@
         function launch() {
             state = "FLYING";
             multiplier = 1.00;
-            document.getElementById('trail').style.transform = "rotate(15deg) scaleX(1)"; 
+            document.getElementById('trail').style.transform = "rotate(15deg) scaleX(1)";
 
-            if (nextBets[1] > 0) { liveBets[1] = nextBets[1]; balance -= nextBets[1]; nextBets[1] = 0; }
-            if (nextBets[2] > 0) { liveBets[2] = nextBets[2]; balance -= nextBets[2]; nextBets[2] = 0; }
+            // START ENGINE SOUND (Wrapped in try/catch for browsers)
+            try { sfx.engine.currentTime = 0; sfx.engine.play(); } catch(e) { console.log("Audio needs interaction"); }
+
+            // Lock Bets
+            [1, 2].forEach(slot => {
+                const acVal = parseFloat(document.getElementById(`auto${slot}-in`).value);
+                autoCollect[slot] = (acVal && acVal > 1.0) ? acVal : null;
+
+                if(nextBets[slot] > 0) {
+                    liveBets[slot] = nextBets[slot];
+                    balance -= nextBets[slot];
+                    nextBets[slot] = 0;
+                }
+            });
             updateBalanceUI();
             updateButtons();
 
-            // PROVABLY FAIR SIM
+            // RNG
             const r = Math.random();
             if (r < 0.3) crashPoint = 1.00 + (Math.random() * 0.2); 
             else if (r < 0.6) crashPoint = 1.20 + (Math.random() * 2.5); 
             else if (r < 0.9) crashPoint = 3.00 + (Math.random() * 10); 
-            else crashPoint = 10 + (Math.random() * 50); 
+            else crashPoint = 10 + (Math.random() * 50);
 
             gameLoop = setInterval(() => {
-                if (multiplier >= crashPoint) {
+                if(multiplier >= crashPoint) {
                     crash();
                 } else {
                     let inc = 0;
-                    if (multiplier < 3.0) inc = 0.02; 
-                    else if (multiplier < 6.5) inc = 0.03; 
-                    else if (multiplier < 12.0) inc = 0.05; 
-                    else inc = 0.09; 
+                    if(multiplier < 3.0) inc = 0.02; else if(multiplier < 6.5) inc=0.03; else if(multiplier<12) inc=0.05; else inc=0.09;
                     multiplier += inc;
+                    
+                    // Auto Collect Logic
+                    [1, 2].forEach(slot => {
+                        if(liveBets[slot] && autoCollect[slot] && multiplier >= autoCollect[slot]) cashOut(slot);
+                    });
+                    
                     updateUI(multiplier);
                 }
             }, 50);
@@ -331,34 +279,50 @@
         function crash() {
             clearInterval(gameLoop);
             state = "CRASHED";
+            
+            // SFX: Stop engine, Play Crash
+            sfx.engine.pause();
+            try { sfx.crash.currentTime = 0; sfx.crash.play(); } catch(e){}
+
             const txt = document.getElementById('mult-display');
             txt.style.color = "var(--danger)";
-            txt.style.opacity = "1"; 
+            txt.style.opacity = "1";
             txt.innerText = "CRASHED @" + crashPoint.toFixed(2) + "x";
-            document.getElementById('trail').style.transform = "scaleX(0)"; 
+            document.getElementById('trail').style.transform = "scaleX(0)";
+            
             addHistory(crashPoint);
-            liveBets = { 1: null, 2: null };
+            liveBets = {1:null, 2:null};
             updateButtons();
             setTimeout(() => { startCountdown(5); }, 3000);
         }
 
         function handleAction(slot) {
             const amount = parseInt(document.getElementById(`bet${slot}-in`).value);
-            if (state === "WAITING" || state === "CRASHED") {
-                if (nextBets[slot] > 0) nextBets[slot] = 0;
+            // Play a click sound if you want, or keep it silent
+            if(state === "WAITING" || state === "CRASHED") {
+                if(nextBets[slot] > 0) nextBets[slot] = 0; 
                 else {
-                    if (amount > balance) { alert("Insufficient Tokens"); return; }
+                    if(amount > balance) return;
                     nextBets[slot] = amount;
                 }
                 updateButtons();
-            } 
-            else if (state === "FLYING" && liveBets[slot]) {
-                const win = Math.floor(liveBets[slot] * multiplier);
-                balance += win;
-                liveBets[slot] = null;
-                updateBalanceUI();
-                updateButtons();
             }
+            else if(state === "FLYING" && liveBets[slot]) {
+                cashOut(slot);
+            }
+        }
+
+        function cashOut(slot) {
+            if(!liveBets[slot]) return;
+            const win = Math.floor(liveBets[slot] * multiplier);
+            balance += win;
+            liveBets[slot] = null;
+            
+            // SFX: Win
+            try { sfx.win.currentTime = 0; sfx.win.play(); } catch(e){}
+
+            updateBalanceUI();
+            updateButtons();
         }
 
         function updateButtons() {
@@ -366,13 +330,13 @@
                 const btn = document.getElementById(`btn${id}`);
                 const amt = nextBets[id];
                 const live = liveBets[id];
-                if (state === "WAITING" || state === "CRASHED") {
-                    if (amt > 0) { btn.className = "btn btn-cancel"; btn.innerText = `CANCEL (${amt})`; } 
-                    else { btn.className = "btn btn-bet"; btn.innerText = `BET (NEXT)`; }
-                } 
-                else if (state === "FLYING") {
-                    if (live) { btn.className = "btn btn-cashout"; btn.innerText = `CASHOUT ${Math.floor(live * multiplier)}`; } 
-                    else { btn.className = "btn btn-wait"; btn.innerText = `WAITING...`; }
+
+                if(state === "WAITING" || state === "CRASHED") {
+                    if(amt > 0) { btn.className="btn btn-cancel"; btn.innerText = `CANCEL (${amt})`; }
+                    else { btn.className="btn btn-bet"; btn.innerText = "BET"; }
+                } else if(state === "FLYING") {
+                    if(live) { btn.className="btn btn-cashout"; btn.innerText = `CASHOUT ${Math.floor(live*multiplier)}`; }
+                    else { btn.className="btn btn-wait"; btn.innerText="WAITING"; }
                 }
             });
         }
@@ -381,46 +345,40 @@
             document.getElementById('mult-display').innerText = val.toFixed(2) + "x";
             if(val > 5.0) document.getElementById('mult-display').classList.add('mult-active');
             
-            // CHASE LOGIC: Move Hero towards Lover (Top Right)
-            // Starts: Bottom Left (20px, 30px)
-            // Ends: Top Right (approx 80%, 80%)
             const player = document.getElementById('player');
-            const percent = Math.min(val * 5, 85); // Cap at 85% across screen
-            
-            player.style.bottom = (30 + (percent * 5)) + "px"; // Move Up
-            player.style.left = (20 + (percent * 3)) + "%"; // Move Right
+            const percent = Math.min(val * 5, 85);
+            player.style.bottom = (30 + (percent*5)) + "px";
+            player.style.left = (20 + (percent*3)) + "%";
         }
 
         function resetVisuals() {
             const txt = document.getElementById('mult-display');
-            txt.innerText = "1.00x";
-            txt.style.color = "rgba(255, 255, 255, 0.3)";
-            txt.classList.remove('mult-active');
-            document.getElementById('player').style.bottom = "30px";
-            document.getElementById('player').style.left = "20px";
+            txt.innerText = "1.00x"; txt.style.color = "rgba(255,255,255,0.25)"; txt.classList.remove('mult-active');
+            document.getElementById('player').style.bottom = "30px"; document.getElementById('player').style.left = "20px";
         }
 
         function addHistory(val) {
-            const track = document.getElementById('history-track');
+            const trk = document.getElementById('history-track');
             const bub = document.createElement('div');
-            bub.className = "history-bubble";
-            bub.innerText = val.toFixed(2) + "x";
-            if (val >= 2.0) bub.className += " win";
-            if (val >= 10.0) bub.className += " big-win";
-            track.prepend(bub);
-            if (track.children.length > 15) track.lastChild.remove();
+            bub.className = "history-bubble"; bub.innerText = val.toFixed(2)+"x";
+            if(val>=2) bub.classList.add('win'); if(val>=10) bub.classList.add('big-win');
+            trk.prepend(bub); if(trk.children.length>15) trk.lastChild.remove();
         }
 
         function updateBalanceUI() { document.getElementById('balance').innerText = balance; }
         function toggleMenu() {
-            const d = document.getElementById('drawer');
-            const o = document.getElementById('overlay');
+            const d = document.getElementById('drawer'); const o = document.getElementById('overlay');
             if(d.classList.contains('open')) { d.classList.remove('open'); o.style.display='none'; }
             else { d.classList.add('open'); o.style.display='block'; }
         }
         function openShop() { window.location.href = `${API_URL}?action=shop`; }
-        function openLink(type) { alert("Opening " + type + "..."); }
-        function checkWeather() { alert("Weather API: 24°C, Wind SE 12km/h"); }
+        function checkWeather() { alert("Orion Weather: 24°C, Wind SE 12km/h"); }
+        
+        // CSS ANIMATIONS
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes moveFloor { from { transform: perspective(400px) rotateX(70deg) translateY(0); } to { transform: perspective(400px) rotateX(70deg) translateY(60px); } }`;
+        document.head.appendChild(style);
+
     </script>
 </body>
 </html>
