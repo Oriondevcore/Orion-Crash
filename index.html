@@ -4,56 +4,230 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ORION CRASH</title>
+    <meta name="theme-color" content="#00FFFF">
+    <link rel="manifest" href="manifest.json">
     <style>
-        :root { --neon-blue: #00f3ff; --neon-purple: #bc13fe; --glass: rgba(255, 255, 255, 0.1); }
-        body { margin: 0; background: #050505; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: white; overflow: hidden; }
-        #game-canvas { width: 100%; height: 40vh; background: radial-gradient(circle at bottom, #111 0%, #000 100%); position: relative; }
-        .bet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 15px; height: 50vh; }
-        .bet-card { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; justify-content: space-between; }
-        .btn-surge { background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); border: none; border-radius: 10px; color: white; padding: 12px; font-weight: bold; font-size: 16px; transition: transform 0.1s; }
-        .btn-surge:active { transform: scale(0.95); }
-        .multiplier { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 48px; font-weight: 800; color: var(--neon-blue); text-shadow: 0 0 20px var(--neon-blue); }
-        .shooting-star { position: absolute; width: 40px; height: 40px; filter: drop-shadow(0 0 10px var(--neon-blue)); }
+        /* --- ORION NEON THEME --- */
+        :root { --cyan: #00FFFF; --blue: #005AFF; --dark: #000814; --glass: rgba(255, 255, 255, 0.05); }
+        body { margin: 0; background-color: var(--dark); font-family: 'Segoe UI', sans-serif; color: white; overflow: hidden; touch-action: manipulation; }
+        
+        /* LAYOUT */
+        #app { display: flex; flex-direction: column; height: 100vh; }
+        
+        /* HEADER */
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid #333; }
+        .logo { font-weight: 900; font-size: 1.2rem; color: white; text-transform: uppercase; letter-spacing: 1px; }
+        .logo span { color: var(--cyan); }
+        .balance-box { background: #1a1a1a; padding: 8px 15px; border-radius: 20px; border: 1px solid #333; display: flex; align-items: center; gap: 10px; }
+        .balance-box span { color: #FFD700; font-weight: bold; }
+
+        /* GAME STAGE */
+        #stage { flex: 1; position: relative; overflow: hidden; background: radial-gradient(circle at bottom, #001a33 0%, #000814 70%); }
+        #grid { width: 100%; height: 100%; background-image: linear-gradient(rgba(0, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.3; }
+        
+        /* MULTIPLIER & SCOOTER */
+        .multiplier { position: absolute; top: 15%; left: 50%; transform: translateX(-50%); font-size: 4.5rem; font-weight: 900; color: white; text-shadow: 0 0 20px var(--cyan); z-index: 10; font-variant-numeric: tabular-nums; }
+        .scooter-container { position: absolute; bottom: 50px; left: 10%; transition: bottom 0.1s linear, left 0.1s linear; transform-origin: center; font-size: 3rem; filter: drop-shadow(0 0 10px var(--cyan)); }
+        .trail { position: absolute; bottom: 20px; left: 20px; width: 0px; height: 4px; background: var(--cyan); box-shadow: 0 0 15px var(--cyan); transform-origin: left; transform: rotate(-15deg); transition: width 0.1s linear; }
+
+        /* CONTROLS */
+        .controls { padding: 10px; background: #0b0b0b; border-top: 1px solid var(--cyan); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; height: auto; }
+        .bet-panel { background: #161616; border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #333; }
+        .input-group { display: flex; background: black; border-radius: 5px; border: 1px solid #333; overflow: hidden; }
+        .input-group input { background: transparent; border: none; color: white; width: 100%; text-align: center; padding: 8px; font-weight: bold; font-size: 1rem; }
+        .btn-bet { background: #9D00FF; color: white; border: none; padding: 12px; border-radius: 5px; font-weight: 900; font-size: 1rem; text-transform: uppercase; width: 100%; box-shadow: 0 4px 0 #6a00ac; active { transform: translateY(2px); box-shadow: 0 2px 0 #6a00ac; } }
+        .btn-cashout { background: #FFCC00; color: black; box-shadow: 0 4px 0 #b38f00; }
+        .crashed { color: #FF3333; text-shadow: 0 0 20px #FF3333; }
+
+        /* FOOTER */
+        .footer { padding: 10px; background: black; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; padding-bottom: 20px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 0.7rem; color: #888; text-decoration: none; }
+        .nav-item img { width: 28px; height: 28px; object-fit: contain; }
+        .nav-item.active { color: var(--cyan); }
+
+        /* MODALS */
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .modal-box { background: #111; border: 1px solid var(--cyan); padding: 25px; border-radius: 15px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 0 30px rgba(0,255,255,0.2); }
+        .modal h2 { color: var(--cyan); margin-top: 0; }
+        .google-btn { background: white; color: #444; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; margin-top: 15px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
     </style>
 </head>
 <body>
-    <div id="game-canvas">
-        <div class="multiplier" id="display-mult">1.00x</div>
-        <div id="motorbike" class="shooting-star">🏍️</div>
+
+    <div id="app">
+        <div class="header">
+            <div class="logo">ORION <span>CRASH</span></div>
+            <div class="balance-box">
+                <span id="user-balance">1000</span> TOKENS
+                <div style="background:var(--blue); width:24px; height:24px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem;" onclick="openShop()">+</div>
+            </div>
+        </div>
+
+        <div id="stage">
+            <div id="grid"></div>
+            <div class="multiplier" id="display-mult">1.00x</div>
+            <div id="scooter" class="scooter-container">
+                🛵
+                <div class="trail"></div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="bet-panel">
+                <div class="input-group">
+                    <input type="number" id="bet1-amount" value="40">
+                </div>
+                <button class="btn-bet" id="btn1" onclick="placeBet(1)">BET</button>
+            </div>
+            <div class="bet-panel">
+                <div class="input-group">
+                    <input type="number" id="bet2-amount" value="100">
+                </div>
+                <button class="btn-bet" id="btn2" onclick="placeBet(2)">BET</button>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="nav-item" onclick="window.location.reload()">
+                <img src="crash.png" alt="Game">
+                GAME
+            </div>
+            <div class="nav-item" onclick="openShop()">
+                <img src="mpos.png" alt="Shop">
+                SHOP
+            </div>
+            <div class="nav-item" onclick="checkWeather()">
+                <img src="weather.png" alt="Weather">
+                WEATHER
+            </div>
+            <div class="nav-item" onclick="openLegal()">
+                <img src="legal.png" alt="Legal">
+                LEGAL
+            </div>
+        </div>
     </div>
 
-    <div class="bet-grid">
-        <div class="bet-card" id="slot-1"><div>Slot 1</div><button class="btn-surge" onclick="placeBet(1)">BET</button></div>
-        <div class="bet-card" id="slot-2"><div>Slot 2</div><button class="btn-surge" onclick="placeBet(2)">BET</button></div>
-        <div class="bet-card" id="slot-3"><div>Slot 3</div><button class="btn-surge" onclick="placeBet(3)">BET</button></div>
-        <div class="bet-card" id="slot-4"><div>Slot 4</div><button class="btn-surge" onclick="placeBet(4)">BET</button></div>
+    <div id="login-modal" class="modal" style="display:flex;">
+        <div class="modal-box">
+            <div style="font-size:3rem; margin-bottom:10px;">⚡</div>
+            <h2>ORION SURGE</h2>
+            <p>Enter email to sync loyalty tokens.</p>
+            <input type="email" id="email-input" placeholder="name@example.com" style="width:90%; padding:10px; border-radius:5px; border:none; margin-bottom:10px;">
+            <button class="google-btn" onclick="handleLogin()">
+                START PLAYING
+            </button>
+            <p style="font-size:0.7rem; color:#666; margin-top:15px;">18+ Only. Tokens have no cash value.</p>
+        </div>
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/a/macros/oriondevcore.com/s/AKfycbyQrTNP0PD4oE_Zq7_IJNkXhD8pxuApU_pCFChD-rYT0ENM-hbEn-TAahtRXnZgfD1iwA/exec";
+        // --- YOUR BACKEND URL ---
+        const API_URL = "https://script.google.com/macros/s/AKfycbxPVj7S3C_nPifGGDh314wswZ1U9HhKOgg9ada_uvMmbgtOlPZHyEq1J-qiMfMpZwIwIw/exec";
         
-        async function placeBet(slotId) {
-            const data = { action: 'placeMultiBet', slot: slotId, amount: 20, username: 'Graham' };
-            
-            // Bypass CORS with text/plain
-            const response = await fetch(SCRIPT_URL + "?action=placeMultiBet", {
-                method: "POST",
-                mode: "no-cors", // Simple request bypass
-                headers: { "Content-Type": "text/plain" },
-                body: JSON.stringify(data),
-                redirect: "follow" // Handle GAS 302 redirect
-            });
-            console.log("Bet Sent for Slot " + slotId);
+        // --- STATE ---
+        let userEmail = localStorage.getItem("orion_email");
+        let balance = 1000;
+        let isRunning = false;
+        let multiplier = 1.00;
+        let crashPoint = 0;
+        let speed = 100;
+        let timer = null;
+
+        // --- INIT ---
+        if(userEmail) {
+            document.getElementById('login-modal').style.display = 'none';
         }
 
-        // 60FPS Animation Loop
-        let start = null;
-        function animate(timestamp) {
-            if (!start) start = timestamp;
-            const progress = timestamp - start;
-            // High-performance transforms
-            document.getElementById('motorbike').style.transform = `translate(${progress/10}px, ${-Math.pow(progress/100, 2)}px)`;
-            requestAnimationFrame(animate);
+        function handleLogin() {
+            const email = document.getElementById('email-input').value;
+            if(email.includes('@')) {
+                localStorage.setItem("orion_email", email);
+                userEmail = email;
+                document.getElementById('login-modal').style.display = 'none';
+                // Trigger backend to check user/add bonus
+                fetch(`${API_URL}?action=login&email=${email}`, {mode:'no-cors'});
+            }
+        }
+
+        // --- SHOP & YOCO ---
+        function openShop() {
+            // Redirects to a Yoco link generated by your script for the "Starter Pack"
+            window.location.href = `${API_URL}?action=shop&email=${userEmail}&package=PKG001`; 
+        }
+
+        function openLegal() {
+            alert("ORION CRASH\n\n1. No Real Money Gambling.\n2. Tokens are for store loyalty only.\n3. 18+ Only.\n\nData protected by POPIA.");
+        }
+
+        function checkWeather() {
+            alert("Orion Weather:\nCurrently clear skies in Durban. Perfect for a Surge.");
+        }
+
+        // --- GAME LOOP (SIMULATED FOR FRONTEND) ---
+        function placeBet(slot) {
+            const btn = document.getElementById(`btn${slot}`);
+            const input = document.getElementById(`bet1-amount`); // Simplified for demo
+            
+            if(!isRunning) {
+                // START GAME
+                isRunning = true;
+                btn.innerText = "CASHOUT";
+                btn.classList.add('btn-cashout');
+                btn.classList.remove('btn-bet');
+                runGame();
+            } else {
+                // CASHOUT
+                const win = Math.floor(input.value * multiplier);
+                balance += win;
+                document.getElementById('user-balance').innerText = balance;
+                resetBtn(slot);
+                alert(`WIN: ${win} TOKENS!`);
+            }
+        }
+
+        function resetBtn(slot) {
+            const btn = document.getElementById(`btn${slot}`);
+            btn.innerText = "BET";
+            btn.classList.remove('btn-cashout');
+            btn.classList.add('btn-bet');
+        }
+
+        function runGame() {
+            multiplier = 1.00;
+            crashPoint = (Math.random() * 5) + 1.1; // Random crash between 1.1x and 6x
+            document.getElementById('display-mult').classList.remove('crashed');
+            document.getElementById('display-mult').style.color = "white";
+
+            timer = setInterval(() => {
+                if(multiplier >= crashPoint) {
+                    crash();
+                } else {
+                    multiplier += 0.01 + (multiplier * 0.002); // Exponential speed
+                    updateUI(multiplier);
+                }
+            }, 50);
+        }
+
+        function updateUI(val) {
+            document.getElementById('display-mult').innerText = val.toFixed(2) + "x";
+            const scooter = document.getElementById('scooter');
+            scooter.style.bottom = (50 + (val * 10)) + "px";
+            scooter.style.left = (10 + (val * 5)) + "%";
+        }
+
+        function crash() {
+            clearInterval(timer);
+            isRunning = false;
+            document.getElementById('display-mult').innerText = "CRASHED @ " + crashPoint.toFixed(2) + "x";
+            document.getElementById('display-mult').classList.add('crashed');
+            resetBtn(1);
+            resetBtn(2);
+            setTimeout(() => {
+                // Reset Position
+                document.getElementById('scooter').style.bottom = "50px";
+                document.getElementById('scooter').style.left = "10%";
+            }, 2000);
         }
     </script>
 </body>
