@@ -1,14 +1,17 @@
 {
-  "name": "ORION CRASH",
-  "short_name": "Crash",
-  "description": "High-stakes lead capture game by Orion Dev Core",
-  "start_url": "./index.html",
+  "name": "Orion Crash",
+  "short_name": "OrionCrash",
+  "description": "The Ultimate Crash Betting Game - AI Amplifies. I Create.",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#050505",
-  "theme_color": "#00f3ff",
+  "background_color": "#000814",
+  "theme_color": "#00FFFF",
   "icons": [
-    { "src": "icon192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "crash.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ]
 }
-
